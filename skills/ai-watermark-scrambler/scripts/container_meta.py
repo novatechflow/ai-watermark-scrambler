@@ -7,6 +7,7 @@ Stdlib-first; PDF prefers optional exiftool/c2patool when present.
 from __future__ import annotations
 
 import io
+import html
 import re
 import subprocess
 import zipfile
@@ -14,6 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from shutil import which
+from xml.sax.saxutils import escape
 
 from common import tool_arg, write_text_file
 from image_meta import AI_META_HINTS, C2PA_MARKERS, run_optional_tools
@@ -443,6 +445,9 @@ _CUSTOMXML_REL_RE = re.compile(
 )
 
 
+_XML_ENTITY_RE = re.compile(r"&(?:amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);")
+
+
 def _layer_a_xml_text(
     xml: str, *, nfkc: bool = False, aggressive_homoglyphs: bool = False
 ) -> tuple[str, int, int]:
@@ -454,12 +459,13 @@ def _layer_a_xml_text(
         if part.startswith("<"):
             out.append(part)
             continue
+        decoded = _XML_ENTITY_RE.sub(lambda match: html.unescape(match.group(0)), part)
         cleaned, stats = clean_text(
-            part, nfkc=nfkc, aggressive_homoglyphs=aggressive_homoglyphs
+            decoded, nfkc=nfkc, aggressive_homoglyphs=aggressive_homoglyphs
         )
         removed += stats["removed_count"]
         replaced += stats["replaced_count"]
-        out.append(cleaned)
+        out.append(escape(cleaned) if cleaned != decoded else part)
     return "".join(out), removed, replaced
 
 
