@@ -23,6 +23,9 @@ A one-token context resynchronizes as soon as the next original pair is intact, 
 
 ## Run
 
+Token counts and context windows must be positive integers. Zero or negative
+values are rejected before generating or reporting a sample.
+
 From the repository root:
 
 ```bash

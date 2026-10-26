@@ -77,7 +77,9 @@ def effective_gamma(vocab_size: int, gamma: float) -> float:
 def _context(history: list[str], mode: str, window: int) -> str:
     if mode != "context":
         return ""
-    span = history[-window:] if window else history
+    if window <= 0:
+        raise ValueError("context window must be positive")
+    span = history[-window:]
     return "\n".join(span) if span else BOS
 
 
@@ -114,6 +116,8 @@ def generate(
     seed: int,
     window: int = 1,
 ) -> list[str]:
+    if n <= 0:
+        raise ValueError("token count must be positive")
     rng = random.Random(seed)
     history: list[str] = []
     out: list[str] = []
@@ -224,6 +228,11 @@ def main() -> int:
     if not 0 <= args.rewrite_rate <= 1:
         print("rewrite-rate must be between 0 and 1", file=sys.stderr)
         return 2
+
+    if args.tokens <= 0:
+        p.error("--tokens must be positive")
+    if args.window is not None and args.window <= 0:
+        p.error("--window must be positive")
 
     if args.mode == "both":
         specs = (("context", 1), ("context", 8), ("unigram", 0))
