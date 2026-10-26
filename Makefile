@@ -4,23 +4,16 @@ SCRIPTS := skills/ai-watermark-scrambler/scripts
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python3; fi)
 
 tools:
-	python3 $(SCRIPTS)/ensure_tools.py --install
+	"$(PYTHON)" $(SCRIPTS)/ensure_tools.py --install
 
 test:
-	$(PYTHON) -m pytest
+	"$(PYTHON)" -m pytest
 
 smoke:
-	-python3 $(SCRIPTS)/inspect_text.py tests/fixtures/sample_watermarked.txt
-	python3 $(SCRIPTS)/clean_text.py tests/fixtures/sample_watermarked.txt -o /tmp/wm.cleaned.txt --stats
-	python3 $(SCRIPTS)/rewrite_text.py tests/fixtures/sample_watermarked.txt --backend print-prompt >/dev/null
-	-python3 $(SCRIPTS)/inspect_file.py tests/fixtures/sample_ai.md
-	python3 $(SCRIPTS)/clean_file.py tests/fixtures/sample_ai.md -o /tmp/sample_ai.cleaned.md
-	python3 $(SCRIPTS)/clean_file.py tests/fixtures/sample_ai.html -o /tmp/sample_ai.cleaned.html
-	python3 $(SCRIPTS)/clean_file.py tests/fixtures/sample_meta.svg -o /tmp/sample_meta.cleaned.svg
-	@echo "smoke ok"
+	"$(PYTHON)" tests/smoke.py
 
 qa:
-	$(PYTHON) demo/watermark_qa.py
+	"$(PYTHON)" demo/watermark_qa.py
 
 SKILLS_DIR ?= $(HOME)/.grok/skills
 
