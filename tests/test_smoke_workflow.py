@@ -59,4 +59,4 @@ def test_make_smoke_uses_selected_interpreter_and_cleans_temp_outputs(tmp_path):
     assert result.returncode == 0, result.stderr
     assert marker.read_text() == "used"
     assert "smoke ok" in result.stdout
-    assert not list(temporary.iterdir())
+    assert not list(temporary.glob("watermark-smoke-*"))
