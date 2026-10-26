@@ -25,9 +25,15 @@ qa:
 SKILLS_DIR ?= $(HOME)/.grok/skills
 
 install-skill:
-	mkdir -p $(SKILLS_DIR)
-	ln -sfn $(CURDIR)/skills/ai-watermark-scrambler $(SKILLS_DIR)/ai-watermark-scrambler
-	@echo "linked -> $(SKILLS_DIR)/ai-watermark-scrambler"
+	@set -eu; \
+	dest="$(SKILLS_DIR)/ai-watermark-scrambler"; \
+	if [ -e "$$dest" ] && [ ! -L "$$dest" ]; then \
+		echo "refusing to replace non-symlink destination: $$dest" >&2; \
+		exit 1; \
+	fi; \
+	mkdir -p "$(SKILLS_DIR)"; \
+	ln -sfn "$(CURDIR)/skills/ai-watermark-scrambler" "$$dest"; \
+	echo "linked -> $$dest"
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
