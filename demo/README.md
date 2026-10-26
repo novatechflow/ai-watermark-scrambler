@@ -30,6 +30,11 @@ make qa
 python3 demo/watermark_qa.py --tokens 400 --gamma 0.25 --rewrite-rate 0.3 --seed 2026
 ```
 
+`--window N` selects that context window in either `--mode context` or the
+default `--mode both`. With an explicit window, both mode prints that context
+row and a unigram row; without one it keeps the three-row comparison above.
+Unigram-only mode rejects `--window` because it does not use a context.
+
 `tests/test_watermark_qa.py` pins the default rows.
 
 ## ZeroGPT and other classifiers

@@ -197,7 +197,7 @@ def main() -> int:
     p.add_argument("--rewrite-rate", type=float, default=0.3)
     p.add_argument("--seed", type=int, default=2026)
     p.add_argument("--key", default="research-key")
-    p.add_argument("--window", type=int, default=1, help="Previous tokens hashed in context mode")
+    p.add_argument("--window", type=int, default=None, help="Context window; defaults to 1 in context mode or 1 and 8 in both mode")
     p.add_argument("--mode", choices=("context", "unigram", "both"), default="both")
     p.add_argument(
         "--zerogpt",
@@ -213,10 +213,15 @@ def main() -> int:
         return 2
 
     if args.mode == "both":
-        specs = (("context", 1), ("context", 8), ("unigram", 0))
+        specs = (
+            (("context", 1), ("context", 8), ("unigram", 0))
+            if args.window is None else (("context", args.window), ("unigram", 0))
+        )
     elif args.mode == "context":
-        specs = (("context", args.window),)
+        specs = (("context", args.window if args.window is not None else 1),)
     else:
+        if args.window is not None:
+            p.error("--window requires context or both mode")
         specs = (("unigram", 0),)
     rows = [
         run_pair(
