@@ -10,6 +10,11 @@ The cleaner scrambles token choice. The score that measures that scramble is a g
 2. Run Layer A (`clean_text`). The mark is not a hidden character, so the z-score does not move.
 3. Replace about 30% of tokens with vocabulary words chosen without the key. That is a stand-in for a Layer B rewrite. The skill's `print-prompt` backend only prints a prompt and does not change tokens, so it is not what this step calls.
 
+This is a synthetic substitution experiment, not an LLM paraphrase or a test
+of any vendor's watermark detector. It checks the expected behavior of the
+schemes implemented here. Semantic preservation and real model rewriting need
+separate evaluation.
+
 The z-score is `(greens - γn) / sqrt(nγ(1-γ))`. On the default seed the harness prints:
 
 ```

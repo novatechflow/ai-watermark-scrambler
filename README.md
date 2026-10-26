@@ -93,18 +93,19 @@ The slash command is the directory name, `ai-watermark-scrambler`. The names in 
 What the agent actually does:
 
 1. Inspect with `inspect_file.py`. Exit 1 means marks were found, not that the command failed.
-2. Write a `*.cleaned.*` copy with `clean_file.py`. That removes invisible Unicode and container metadata. It does not touch the statistical watermark.
+2. Write a `*.cleaned.*` copy with `clean_file.py`. That cleans supported text and metadata channels; see the format table in the skill README. It does not touch the statistical watermark.
 3. For prose, offer a Layer B rewrite. `rewrite_text.py --backend print-prompt` only prints the prompt. The statistical scramble happens when the agent, or `--backend ollama`, rewrites the text. `simplify` is the lighter pass. Use a model other than the one that likely wrote the text.
-4. Inspect again. Say what was verified, which scramble ran, and that the statistical signal is not certified gone.
+4. Inspect again. Container inspection reports metadata; use `inspect_text.py` for Unicode in text sources, or extract DOCX/ODT text before checking it. Say what was verified, which scramble ran, and that the statistical signal is not certified gone.
 
 `make test` and `make smoke` check the scripts. They do not check that an agent loaded the skill.
 
 ## Quick start
 
 ```bash
-make tools    # optional extras (pikepdf, c2pa-python) into the skill venv
+make dev      # create repo .venv; install optional extras and pytest
 make test     # pytest
 make smoke    # end-to-end CLI run over tests/fixtures
+make qa       # synthetic watermark research harness
 
 python3 skills/ai-watermark-scrambler/scripts/inspect_file.py notes.md
 python3 skills/ai-watermark-scrambler/scripts/clean_file.py notes.md -o notes.cleaned.md
@@ -121,16 +122,18 @@ skills/ai-watermark-scrambler/
   requirements.txt  optional extras
 tests/              pytest suite and fixtures
 demo/               research harness for the green-list z-score
-Makefile            tools / test / smoke / qa / install-skill / clean
+Makefile            dev / tools / test / smoke / qa / install-skill / clean
+requirements-dev.txt repo development dependencies (optional extras + pytest)
 ```
 
 ## Make targets
 
 | Target | Does |
 | --- | --- |
+| `dev` | Creates the repo `.venv` if needed and installs `requirements-dev.txt` |
 | `tools` | Creates `skills/ai-watermark-scrambler/.venv` and installs the optional extras |
 | `test` | Runs pytest |
-| `smoke` | Drives the CLI end to end over `tests/fixtures` |
+| `smoke` | Checks exact inspector exit codes and re-inspects cleaned fixtures in private temporary output |
 | `qa` | Runs the green-list research harness. Write-up: [`demo/README.md`](demo/README.md) |
 | `install-skill` | Symlinks the skill into `~/.grok/skills/` (`SKILLS_DIR` overrides that directory) |
 | `clean` | Drops `__pycache__`, `.pytest_cache`, and both venvs |
@@ -144,11 +147,17 @@ Two separate install paths. Do not confuse them:
 | Skill installed on a host, no repo | `ensure_tools.py --install` | Skill extras into `<skill>/.venv` |
 | Working on this repo | `pip install -r requirements-dev.txt` | Skill extras **+ pytest** |
 
+Keep `requirements-dev.txt` for repo development and the skill's
+`requirements.txt` for its optional runtime extras. A root `requirements.txt`
+would imply a separate runtime dependency set, but the scripts have no required
+third-party runtime dependencies. For a managed development environment, use
+`make dev`; the pip command above is for an environment you have already activated.
+
 - The skill is self-contained: it ships its own `requirements.txt` and installs it into its own venv, so a fresh host needs nothing from this repo.
 - `requirements-dev.txt` exists only to add the test runner. Nothing at runtime reads it.
 - The scripts run on the Python standard library alone.
 - Optional extras only remove degraded modes; they are never required.
-- `pikepdf`: PDF strip and rewrite. Without it (or `qpdf`), PDF cleans exit 3 and the pre-strip revision stays readable.
+- `pikepdf`: PDF strip and rewrite. The alternative is `exiftool` plus `qpdf`; `qpdf` alone only rewrites the file. Without a working strip-and-rewrite path, PDF cleans exit 3 and may retain metadata or prior revisions.
 - `c2pa-python`: C2PA manifest inspection.
 - `exiftool`: no pip package; install with `brew install exiftool` or `apt install libimage-exiftool-perl`.
 - Run `python3 skills/ai-watermark-scrambler/scripts/ensure_tools.py` for a status table.
@@ -158,6 +167,7 @@ Two separate install paths. Do not confuse them:
 - Suite covers the Unicode and container cleaners, image metadata paths, the Layer B rewrite hook, security properties (zip bombs, symlink writes, path handling), and a CLI contract pinning documented exit codes and flags against real `--help` output.
 - Tests needing `pikepdf` or `c2pa` skip themselves when absent, so the suite passes with or without the extras.
 - `make test` uses `.venv/bin/python` when a repo-level venv exists, `python3` otherwise.
+- Python Make targets share the `PYTHON` override; for example, `make qa PYTHON=python3.13`.
 - The skill venv at `skills/ai-watermark-scrambler/.venv` is added to `sys.path` by the scripts, so no activation needed.
 
 ## CI
@@ -171,8 +181,8 @@ Two separate install paths. Do not confuse them:
 | Channel | Removed? |
 | --- | --- |
 | Invisible Unicode | Yes (verify by re-inspecting) |
-| Hard-bound C2PA manifest | Yes (verify by re-inspecting) |
-| Container metadata (EXIF, XMP, doc props) | Yes |
+| Hard-bound C2PA manifest | Supported containers; verify output and exit status |
+| Container metadata (EXIF, XMP, doc props) | Supported fields only; unrelated DOCX/ODT properties may remain |
 | Statistical text watermark | Reduced, not provably gone |
 | C2PA **soft binding** | No (survives by design) |
 | Pixel / audio / video watermarks (SynthID-media) | No |

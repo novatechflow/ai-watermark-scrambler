@@ -1,10 +1,14 @@
-.PHONY: test smoke tools install-skill qa clean
+.PHONY: dev test smoke tools install-skill qa clean
 
 SCRIPTS := skills/ai-watermark-scrambler/scripts
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python3; fi)
 
 tools:
 	python3 $(SCRIPTS)/ensure_tools.py --install
+
+dev:
+	@if [ ! -x .venv/bin/python ]; then "$(PYTHON)" -m venv .venv; fi
+	.venv/bin/python -m pip install -r requirements-dev.txt
 
 test:
 	$(PYTHON) -m pytest

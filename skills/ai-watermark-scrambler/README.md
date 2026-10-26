@@ -15,6 +15,10 @@ Covers Claude, Gemini / SynthID-class, OpenAI, and open-LLM marks. `SKILL.md` is
 
 The scripts run on the standard library alone. Optional extras only remove degraded modes:
 
+Run the following commands from this skill directory (the directory containing
+this README and `scripts/`). For repository development, use the root setup
+under Development below.
+
 ```bash
 python3 scripts/ensure_tools.py            # status table
 python3 scripts/ensure_tools.py --install  # create .venv, install requirements.txt
@@ -27,7 +31,8 @@ That installs `pikepdf` (PDF strip + rewrite) and `c2pa-python` (C2PA inspect) i
 ```bash
 python3 scripts/inspect_file.py notes.md              # look first
 python3 scripts/clean_file.py notes.md -o notes.cleaned.md
-python3 scripts/inspect_file.py notes.cleaned.md      # verify
+python3 scripts/inspect_file.py notes.cleaned.md      # verify container metadata
+python3 scripts/inspect_text.py notes.cleaned.md      # check Unicode in the source
 ```
 
 `inspect_file` / `clean_file` dispatch on file type. The per-type scripts are also available directly:
@@ -68,8 +73,8 @@ For code, prefer a formatter (`prettier`, `black`, `gofmt`) plus Layer A; statis
 | Text / code | Invisible Unicode, bidi controls, exotic spaces |
 | PNG / JPEG | C2PA (APP11/JUMBF), text chunks, EXIF/XMP. Color data stays: PNG ICC, gamma, sRGB, and cHRM; JPEG JFIF, ICC APP2, and Adobe APP14 |
 | SVG | `<metadata>` blocks, XMP packets |
-| PDF | XMP, document info, and C2PA associated-file manifests (`pikepdf`, else `qpdf`) |
-| DOCX / ODT | Document properties, `customXml` (parts and relationships), `meta:generator`, invisible Unicode in the text |
+| PDF | XMP, document info, and C2PA associated-file manifests via `pikepdf`; fallback metadata stripping needs `exiftool` plus `qpdf` to remove prior revisions |
+| DOCX / ODT | AI provenance properties; DOCX `customXml` parts and relationships; ODT `meta:generator`; invisible Unicode in document text. Unrelated document properties may remain |
 | HTML | AI `generator` meta, provenance meta names, provenance JSON-LD, `data-ai*`. Description, Open Graph, a CMS generator, and ordinary JSON-LD stay |
 | Markdown | Provenance key names in YAML frontmatter. A title or description that mentions a vendor stays |
 
@@ -78,13 +83,17 @@ For code, prefer a formatter (`prettier`, `black`, `gofmt`) plus Layer A; statis
 | Code | Meaning |
 | --- | --- |
 | 0 | Clean: nothing found, or everything removed |
-| 1 | Marks found (inspect), or residual C2PA/AI signals after a clean |
+| 1 | Marks found (inspect), residual C2PA/AI signals after a clean, or a rewrite/tool-setup failure |
 | 2 | Bad input (missing file, unsupported type, or a file the cleaner cannot read) |
 | 3 | Degraded: the cleaner ran without the tools it needed; output is not fully cleaned |
 
-Inspect scripts exit 1 on a dirty file, so guard them in `make`-style pipelines (`-` prefix) or `if` blocks.
+Inspect scripts exit 1 on a dirty file. Handle that expected status explicitly
+in pipelines; suppressing every error would also hide bad input and crashes.
 
-These codes are uniform across every script, so exit 1 always means *marks found* and never *the file was unreadable*. A missing path, an unsupported type, or a file the cleaner cannot read is exit 2. `tests/test_cli_contract.py` pins that, along with the flag lists above.
+For inspect/clean commands, a missing path or an unsupported type is exit 2.
+`tests/test_cli_contract.py` checks those cases and the flag lists above.
+An exit 1 from `rewrite_text.py` or `ensure_tools.py` is an operational failure,
+not evidence that a watermark was detected.
 
 ## Residual risk after a clean
 
@@ -92,8 +101,8 @@ A successful strip does not mean no provenance remains. What survives:
 
 | Channel | Survives our clean? | How to check |
 | --- | --- | --- |
-| Invisible Unicode | No | re-run `inspect_text` / `inspect_file` |
-| Hard-bound C2PA manifest | No | Content Credentials verify, `c2pa-python` |
+| Invisible Unicode | Removed in supported text paths; script/emoji controls intentionally stay | `inspect_text` on text sources or extracted document text |
+| Hard-bound C2PA manifest | Removed where supported; verify | Content Credentials verify, `c2pa-python` |
 | C2PA **soft binding** (in-content link to a remote manifest) | **Yes, by design** | vendor detector only |
 | Pixel / audio / video watermarks (SynthID-media) | **Yes** | SynthID Detector |
 | Visible overlays (logos, stock stamps) | **Yes** | Look at the image |
@@ -101,6 +110,10 @@ A successful strip does not mean no provenance remains. What survives:
 | Data-driven model backdoors | **Yes** | out of reach |
 
 Report the three buckets separately: what was verifiably removed (counts, actions), what was best-effort (Layer B), and what was never in scope. Layer B cannot be gold-verified without vendor detectors or keys, so no "undetectable" claim is supportable.
+
+`inspect_file` dispatches HTML, Markdown, DOCX, and ODT to metadata inspection;
+it does not certify their Unicode text is clean. PDF and SVG cleaning handles
+metadata, not Layer A text.
 
 ## Reference docs
 
@@ -115,7 +128,12 @@ Report the three buckets separately: what was verifiably removed (counts, action
 From the repository root:
 
 ```bash
-make tools   # install optional extras
+make dev     # repo .venv: optional extras + pytest from requirements-dev.txt
 make test    # pytest (tests/)
 make smoke   # end-to-end run over tests/fixtures
+make qa      # synthetic green-list experiment
 ```
+
+`make tools` is the separate setup for optional extras in the skill's own venv;
+it does not install the test runner. Keep the skill `requirements.txt` inside
+the skill so a standalone installation does not depend on repository files.
