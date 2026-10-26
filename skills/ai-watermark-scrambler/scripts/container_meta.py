@@ -7,7 +7,6 @@ Stdlib-first; PDF prefers optional exiftool/c2patool when present.
 from __future__ import annotations
 
 import io
-import html
 import re
 import subprocess
 import zipfile
@@ -490,6 +489,15 @@ _CUSTOMXML_REL_RE = re.compile(
 _XML_ENTITY_RE = re.compile(r"&(?:amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);")
 
 
+def _decode_xml_entity(match: re.Match[str]) -> str:
+    reference = match.group(0)
+    if reference.startswith("&#x"):
+        return chr(int(reference[3:-1], 16))
+    if reference.startswith("&#"):
+        return chr(int(reference[2:-1], 10))
+    return {"&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&apos;": "'"}[reference]
+
+
 def _layer_a_xml_text(
     xml: str, *, nfkc: bool = False, aggressive_homoglyphs: bool = False
 ) -> tuple[str, int, int]:
@@ -501,13 +509,14 @@ def _layer_a_xml_text(
         if part.startswith("<"):
             out.append(part)
             continue
-        decoded = _XML_ENTITY_RE.sub(lambda match: html.unescape(match.group(0)), part)
+        # XML normalizes literal line endings before expanding references.
+        decoded = _XML_ENTITY_RE.sub(_decode_xml_entity, part.replace("\r\n", "\n").replace("\r", "\n"))
         cleaned, stats = clean_text(
             decoded, nfkc=nfkc, aggressive_homoglyphs=aggressive_homoglyphs
         )
         removed += stats["removed_count"]
         replaced += stats["replaced_count"]
-        out.append(escape(cleaned) if cleaned != decoded else part)
+        out.append(escape(cleaned, {"\r": "&#13;"}) if cleaned != decoded else part)
     return "".join(out), removed, replaced
 
 

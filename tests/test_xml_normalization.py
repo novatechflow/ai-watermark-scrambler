@@ -17,6 +17,10 @@ from container_meta import clean_docx, clean_odt
     ("price ＜ ５ ＆ ６", "price < 5 & 6"),
     ("Ａ &amp; B &lt; C &#xFF06; D", "A & B < C & D"),
     ("A&#x200B; &amp; B", "A & B"),
+    ("Ａ &#x80; &#128;", "A \u0080 \u0080"),
+    ("Ａ &#13; &#x1F600;", "A \r 😀"),
+    ("Ａ \r B", "A \n B"),
+    ("Ａ \r\n B", "A \n B"),
 ])
 def test_normalized_xml_is_valid_and_preserves_text(cleaner, part, text, expected):
     xml = f'<doc xmlns="urn:test"><text>{text}</text></doc>'
