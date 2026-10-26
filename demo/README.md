@@ -43,3 +43,7 @@ ZEROGPT_API_KEY=... python3 demo/watermark_qa.py --zerogpt
 ```
 
 The script prints `verdict` and `ai_score` for the context sample before and after the rewrite. A missing key skips the call. A failed call is reported and does not change the z-score result.
+
+If either sample exceeds ZeroGPT's 15,000-character request limit, the entire
+classifier comparison is explicitly skipped before making any requests. Text is
+never silently truncated: the watermark scores always cover the full sample.

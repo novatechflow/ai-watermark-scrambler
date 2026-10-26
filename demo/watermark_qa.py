@@ -25,6 +25,7 @@ from text_unicode import clean_text  # noqa: E402
 
 BOS = "\0"
 ZEROGPT_URL = "https://app.zerogpt.net/api/v1/text/detect"
+ZEROGPT_MAX_CHARS = 15000
 
 VOCAB = """
 about above across after again against almost along already also
@@ -135,7 +136,9 @@ def layer_a(tokens: list[str]) -> tuple[list[str], dict]:
 
 
 def zerogpt_detect(text: str, api_key: str, timeout: float = 30) -> dict:
-    body = json.dumps({"document": text[:15000]}).encode()
+    if len(text) > ZEROGPT_MAX_CHARS:
+        raise RuntimeError(f"ZeroGPT sample exceeds {ZEROGPT_MAX_CHARS} characters; refusing a partial score")
+    body = json.dumps({"document": text}).encode()
     req = urllib.request.Request(
         ZEROGPT_URL,
         data=body,
@@ -243,6 +246,9 @@ def main() -> int:
             print("ZeroGPT skipped: ZEROGPT_API_KEY is not set")
         else:
             sample = next(r for r in rows if r["mode"] == "context") if args.mode != "unigram" else rows[0]
+            if any(len(sample[label]) > ZEROGPT_MAX_CHARS for label in ("marked_text", "rewritten_text")):
+                print(f"ZeroGPT skipped: comparison samples exceed {ZEROGPT_MAX_CHARS} characters; no requests sent")
+                return 0
             for label in ("marked_text", "rewritten_text"):
                 try:
                     report = zerogpt_detect(sample[label], api_key)
