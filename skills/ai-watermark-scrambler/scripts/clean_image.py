@@ -14,9 +14,9 @@ from common import (  # noqa: E402
     EXIT_BAD_INPUT,
     EXIT_ERROR,
     cleaned_path,
+    create_in_place_backup,
     eprint,
     exit_code,
-    reject_symlink_in_place,
 )
 from image_meta import clean_image  # noqa: E402
 
@@ -44,12 +44,11 @@ def main() -> int:
 
     src = args.path
     if args.in_place:
-        err = reject_symlink_in_place(args.path)
-        if err:
-            eprint(err)
+        try:
+            bak = create_in_place_backup(args.path)
+        except (OSError, ValueError) as exc:
+            eprint(f"error: {exc}")
             return EXIT_BAD_INPUT
-        bak = args.path.with_suffix(args.path.suffix + ".bak")
-        bak.write_bytes(args.path.read_bytes())
         src = bak
         dest = args.path
     else:

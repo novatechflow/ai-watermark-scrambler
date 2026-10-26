@@ -13,10 +13,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
     EXIT_BAD_INPUT,
     cleaned_path,
+    create_in_place_backup,
     eprint,
     read_text_input,
-    reject_symlink_in_place,
-    write_text_file,
     write_text_output,
 )
 from text_unicode import clean_text  # noqa: E402
@@ -59,12 +58,11 @@ def main() -> int:
             eprint("--in-place requires a file path")
             return EXIT_BAD_INPUT
         src = Path(args.path)
-        err = reject_symlink_in_place(src)
-        if err:
-            eprint(err)
+        try:
+            create_in_place_backup(src)
+        except (OSError, ValueError) as exc:
+            eprint(f"error: {exc}")
             return EXIT_BAD_INPUT
-        bak = src.with_suffix(src.suffix + ".bak")
-        write_text_file(bak, text)
         out = str(src)
     elif out is None and args.path not in (None, "-"):
         out = str(cleaned_path(Path(args.path)))

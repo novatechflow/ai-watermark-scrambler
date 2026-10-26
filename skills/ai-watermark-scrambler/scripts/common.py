@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -84,6 +86,27 @@ def reject_symlink_in_place(path: Path) -> str | None:
 def write_text_file(path: Path, text: str) -> None:
     """Write text read back with surrogateescape without truncating on encode errors."""
     path.write_bytes(text.encode("utf-8", errors="surrogateescape"))
+
+
+def create_in_place_backup(path: Path) -> Path:
+    """Back up bytes atomically without writing through source or backup links."""
+    error = reject_symlink_in_place(path)
+    if error:
+        raise ValueError(error)
+    backup = path.with_suffix(path.suffix + ".bak")
+    if backup.is_symlink():
+        raise ValueError(f"--in-place refuses backup symlinks: {backup}")
+    # Replacing the directory entry also avoids modifying any hardlink target.
+    # A symlink appearing after the check is replaced, never followed.
+    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as temporary:
+        temporary_path = Path(temporary.name)
+        try:
+            temporary.write(path.read_bytes())
+            temporary.close()
+            os.replace(temporary_path, backup)
+        finally:
+            temporary_path.unlink(missing_ok=True)
+    return backup
 
 
 def emit_json(data: Any) -> None:

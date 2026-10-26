@@ -15,10 +15,10 @@ from common import (  # noqa: E402
     EXIT_BAD_INPUT,
     EXIT_OK,
     cleaned_path,
+    create_in_place_backup,
     detect_kind,
     eprint,
     exit_code,
-    reject_symlink_in_place,
     write_text_file,
 )
 from container_meta import ZipTooLarge, clean_container  # noqa: E402
@@ -54,12 +54,11 @@ def main() -> int:
     kind = args.force_type if args.force_type != "auto" else detect_kind(args.path)
 
     if args.in_place:
-        err = reject_symlink_in_place(args.path)
-        if err:
-            eprint(err)
+        try:
+            bak = create_in_place_backup(args.path)
+        except (OSError, ValueError) as exc:
+            eprint(f"error: {exc}")
             return EXIT_BAD_INPUT
-        bak = args.path.with_suffix(args.path.suffix + ".bak")
-        bak.write_bytes(args.path.read_bytes())
         dest = args.path
         src = bak
     else:
