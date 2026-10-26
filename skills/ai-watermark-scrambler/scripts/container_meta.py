@@ -11,6 +11,7 @@ import re
 import subprocess
 import zipfile
 from dataclasses import dataclass, field
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 from shutil import which
@@ -245,10 +246,6 @@ def clean_markdown(text: str) -> tuple[str, list[str]]:
 # HTML
 # ---------------------------------------------------------------------------
 
-_META_TAG_RE = re.compile(
-    r"<meta\b[^>]*>",
-    re.I,
-)
 _JSONLD_RE = re.compile(
     r"<script\b[^>]*type\s*=\s*[\"']application/ld\+json[\"'][^>]*>.*?</script>",
     re.I | re.DOTALL,
@@ -269,9 +266,38 @@ _JSONLD_PROVENANCE_RE = re.compile(
 )
 
 
+class _StartTags(HTMLParser):
+    """Collect real start tags and their source offsets without rewriting HTML."""
+
+    def __init__(self, text: str) -> None:
+        super().__init__(convert_charrefs=True)
+        self.tags: list[tuple[int, str, str, dict[str, str]]] = []
+        self.lines = [0]
+        self.lines.extend(match.end() for match in re.finditer("\n", text))
+        self.feed(text)
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        line, column = self.getpos()
+        self.tags.append((
+            self.lines[line - 1] + column, tag, self.get_starttag_text(),
+            {name: value or "" for name, value in attrs},
+        ))
+
+    handle_startendtag = handle_starttag
+
+
 def _attr(tag: str, attr: str) -> str:
-    m = re.search(rf"""\b{attr}\s*=\s*(["'])(.*?)\1""", tag, re.I | re.DOTALL)
-    return m.group(2) if m else ""
+    tags = _StartTags(tag).tags
+    return tags[0][3].get(attr, "") if tags else ""
+
+
+_HTML_ATTRIBUTE_RE = re.compile(
+    r"""\s+([^\s=/>]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?"""
+)
+
+
+def _is_ai_attr(name: str) -> bool:
+    return re.fullmatch(r"data-ai[\w-]*", name, re.I) is not None
 
 
 def _meta_names(tag: str) -> str:
@@ -304,7 +330,10 @@ def inspect_html(text: str) -> tuple[bool, bool, list[str], dict]:
     findings: list[str] = []
     has_ai = False
     has_c2pa = False
-    for tag in _META_TAG_RE.findall(text):
+    tags = _StartTags(text).tags
+    for _offset, name, tag, _attrs in tags:
+        if name != "meta":
+            continue
         drop, c2pa = _meta_is_provenance(tag)
         if drop:
             has_ai = True
@@ -319,23 +348,40 @@ def inspect_html(text: str) -> tuple[bool, bool, list[str], dict]:
             if re.search(r"c2pa|contentcredential", blob, re.I):
                 has_c2pa = True
     # data-ai* attributes
-    for m in re.finditer(r"\bdata-ai[\w-]*\s*=\s*[\"'][^\"']*[\"']", text, re.I):
-        has_ai = True
-        findings.append(f"attr: {m.group(0)[:80]}")
+    for _offset, _name, _tag, attrs in tags:
+        for name, value in attrs.items():
+            if _is_ai_attr(name):
+                has_ai = True
+                findings.append(f"attr: {name}={value}"[:86])
     return has_c2pa, has_ai, findings, {}
 
 
 def clean_html(text: str) -> tuple[str, list[str]]:
     actions: list[str] = []
 
-    def _meta_sub(m: re.Match[str]) -> str:
-        tag = m.group(0)
-        if _meta_is_provenance(tag)[0]:
+    edits: list[tuple[int, int, str]] = []
+    removed_attrs = 0
+    for offset, name, tag, _attrs in _StartTags(text).tags:
+        if name == "meta" and _meta_is_provenance(tag)[0]:
             actions.append(f"drop meta: {tag[:80]}")
-            return ""
-        return tag
+            edits.append((offset, offset + len(tag), ""))
+            continue
 
-    out = _META_TAG_RE.sub(_meta_sub, text)
+        def _attribute_sub(match: re.Match[str]) -> str:
+            nonlocal removed_attrs
+            if _is_ai_attr(match.group(1)):
+                removed_attrs += 1
+                return ""
+            return match.group(0)
+
+        cleaned = _HTML_ATTRIBUTE_RE.sub(_attribute_sub, tag)
+        if cleaned != tag:
+            edits.append((offset, offset + len(tag), cleaned))
+    out = text
+    for start, end, replacement in reversed(edits):
+        out = out[:start] + replacement + out[end:]
+    if removed_attrs:
+        actions.append(f"drop data-ai* attributes x{removed_attrs}")
 
     def _jsonld_sub(m: re.Match[str]) -> str:
         blob = m.group(0)
@@ -345,10 +391,6 @@ def clean_html(text: str) -> tuple[str, list[str]]:
         return blob
 
     out = _JSONLD_RE.sub(_jsonld_sub, out)
-    out2, n = re.subn(r"\sdata-ai[\w-]*\s*=\s*[\"'][^\"']*[\"']", "", out, flags=re.I)
-    if n:
-        actions.append(f"drop data-ai* attributes x{n}")
-        out = out2
     if not actions:
         actions.append("no HTML AI meta removed")
     return out, actions
