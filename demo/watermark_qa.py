@@ -52,15 +52,26 @@ white whole will with without word work world would write
 
 
 def green_ids(vocab_size: int, key: str, context: str, gamma: float) -> set[int]:
+    k = _green_count(vocab_size, gamma)
     order = list(range(vocab_size))
     digest = hashlib.sha256(f"{key}\n{context}".encode()).digest()
     random.Random(int.from_bytes(digest[:8], "big")).shuffle(order)
-    k = max(1, int(round(vocab_size * gamma)))
     return set(order[:k])
 
 
+def _green_count(vocab_size: int, gamma: float) -> int:
+    if vocab_size < 2:
+        raise ValueError("vocabulary must contain at least two entries")
+    if not 0 < gamma < 1:
+        raise ValueError("gamma must be between 0 and 1")
+    count = max(1, int(round(vocab_size * gamma)))
+    if count >= vocab_size:
+        raise ValueError("gamma rounds to an all-green vocabulary; choose a lower gamma")
+    return count
+
+
 def effective_gamma(vocab_size: int, gamma: float) -> float:
-    return max(1, int(round(vocab_size * gamma))) / vocab_size
+    return _green_count(vocab_size, gamma) / vocab_size
 
 
 def _context(history: list[str], mode: str, window: int) -> str:
@@ -205,8 +216,10 @@ def main() -> int:
         help="Also score the context sample with ZeroGPT when ZEROGPT_API_KEY is set",
     )
     args = p.parse_args()
-    if not 0 < args.gamma < 1:
-        print("gamma must be between 0 and 1", file=sys.stderr)
+    try:
+        effective_gamma(len(VOCAB), args.gamma)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
         return 2
     if not 0 <= args.rewrite_rate <= 1:
         print("rewrite-rate must be between 0 and 1", file=sys.stderr)

@@ -32,6 +32,10 @@ python3 demo/watermark_qa.py --tokens 400 --gamma 0.25 --rewrite-rate 0.3 --seed
 
 `tests/test_watermark_qa.py` pins the default rows.
 
+Gamma must be between 0 and 1 and leave at least one vocabulary entry outside
+the rounded green list. Values such as `--gamma 0.999` are rejected because the
+effective fraction becomes 1 and has no defined z-score.
+
 ## ZeroGPT and other classifiers
 
 ZeroGPT, GPTZero, and the same class guess whether prose reads like a model. They do not have the watermark key and they do not compute this z-score. A human verdict can sit on text whose green-list score is still high, and the reverse happens too. The synthetic word list above is also a poor input for those classifiers.
