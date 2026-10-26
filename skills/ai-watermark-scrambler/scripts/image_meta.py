@@ -16,6 +16,7 @@ from common import tool_arg
 
 PNG_SIG = b"\x89PNG\r\n\x1a\n"
 JPEG_SOI = b"\xff\xd8"
+MAX_PNG_TEXT_BYTES = 8 * 1024 * 1024
 
 # Chunk types / content patterns associated with C2PA / AI provenance
 C2PA_MARKERS = (
@@ -107,6 +108,40 @@ def _contains_any(blob: bytes, needles: tuple[bytes, ...]) -> list[str]:
     return found
 
 
+def _png_text_payload(ctype: bytes, payload: bytes) -> bytes:
+    """Decode PNG text with a strict output cap, retaining keyword/header fields."""
+    if ctype == b"tEXt":
+        return payload
+    keyword, separator, rest = payload.partition(b"\x00")
+    if not separator:
+        raise ValueError("missing text keyword separator")
+    if ctype == b"zTXt":
+        if not rest or rest[0] != 0:
+            raise ValueError("invalid zTXt compression method")
+        header, text, compressed = keyword + separator, rest[1:], True
+    else:  # iTXt: compression flag, method, language, translated keyword, text
+        if len(rest) < 2 or rest[0] not in (0, 1) or rest[1] != 0:
+            raise ValueError("invalid iTXt compression fields")
+        fields = rest[2:].split(b"\x00", 2)
+        if len(fields) != 3:
+            raise ValueError("missing iTXt language/keyword separator")
+        header = keyword + separator + fields[0] + b"\x00" + fields[1] + b"\x00"
+        text, compressed = fields[2], bool(rest[0])
+    limit = MAX_PNG_TEXT_BYTES - len(header)
+    if limit < 0:
+        raise ValueError("text metadata header exceeds limit")
+    if compressed:
+        decoder = zlib.decompressobj()
+        text = decoder.decompress(text, limit + 1)
+        if len(text) > limit or decoder.unconsumed_tail:
+            raise ValueError("decompressed text exceeds limit")
+        if not decoder.eof or decoder.unused_data:
+            raise ValueError("invalid or truncated compressed text")
+    elif len(text) > limit:
+        raise ValueError("text metadata exceeds limit")
+    return header + text
+
+
 def inspect_png(data: bytes) -> tuple[bool, bool, list[str]]:
     findings: list[str] = []
     has_c2pa = False
@@ -130,7 +165,14 @@ def inspect_png(data: bytes) -> tuple[bool, bool, list[str]]:
             findings.append(f"PNG chunk {name} (possible C2PA container)")
         elif ctype != b"IDAT":
             # IDAT is compressed pixels. Short needles like "jumb" match there by chance.
-            hits = _contains_any(payload, AI_META_HINTS + C2PA_MARKERS)
+            try:
+                metadata = _png_text_payload(ctype, payload) if ctype in (b"tEXt", b"zTXt", b"iTXt") else payload
+            except (ValueError, zlib.error) as exc:
+                # Never report unchecked metadata as clean.
+                has_ai = True
+                findings.append(f"PNG {name}: unreadable text metadata ({exc})")
+                metadata = b""
+            hits = _contains_any(metadata, AI_META_HINTS + C2PA_MARKERS)
             if hits:
                 has_ai = True
                 if any(
@@ -341,7 +383,13 @@ def strip_png(data: bytes, *, strip_all_text: bool = True) -> tuple[bytes, list[
             drop = True
             actions.append(f"drop chunk {name}")
         elif ctype in (b"tEXt", b"zTXt", b"iTXt"):
-            if strip_all_text or _contains_any(payload, AI_META_HINTS + C2PA_MARKERS):
+            try:
+                metadata = _png_text_payload(ctype, payload)
+            except (ValueError, zlib.error) as exc:
+                drop = True
+                actions.append(f"drop chunk {name} (unreadable text metadata: {exc})")
+                metadata = b""
+            if not drop and (strip_all_text or _contains_any(metadata, AI_META_HINTS + C2PA_MARKERS)):
                 drop = True
                 actions.append(f"drop chunk {name}")
         elif _contains_any(ctype + payload, C2PA_MARKERS) and ctype not in (
