@@ -4,6 +4,7 @@ updates:
     directories:
       - /
       - /skills/ai-watermark-scrambler
+      - /demo
     schedule:
       interval: weekly
     groups:

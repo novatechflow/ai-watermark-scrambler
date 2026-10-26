@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "created_utc": "2026-10-26T15:30:04.252456+00:00",
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "vocab_size": 151936,
+    "resolved_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "inference_device": "mps",
+    "dtype": "torch.float16",
+    "watermark_rng_device": "cpu"
+  },
+  "embedding_model": {
+    "id": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  },
+  "watermark": {
+    "implementation": "transformers.WatermarkingConfig/WatermarkDetector",
+    "seeding_scheme": "lefthash",
+    "gamma": 0.25,
+    "bias": 2.0,
+    "hashing_key": 15485863,
+    "context_width": 1,
+    "threshold": 4.0,
+    "ignore_repeated_ngrams": true
+  },
+  "generation": {
+    "temperature": 0.8,
+    "top_p": 0.95,
+    "top_k": 0,
+    "min_new_tokens": 128,
+    "max_new_tokens": 256,
+    "requested_device": "auto",
+    "threads": 4,
+    "seeds": [
+      2026
+    ],
+    "device": "mps",
+    "dtype": "torch.float16"
+  },
+  "runtime": {
+    "python": "3.12.8",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "script_sha256": "e545a805ea888784d7ee2e17aa3db508ad72b447507066656a72b2245dd9a4c1",
+    "prompts_sha256": "5e4a570bb77e1601065a4854c9d585e962e8702c0ac9aad32eca19797c24b038",
+    "packages": {
+      "torch": "2.14.1",
+      "transformers": "5.20.2",
+      "tokenizers": "0.23.3",
+      "safetensors": "0.8.0",
+      "numpy": "2.5.4",
+      "huggingface-hub": "2.3.0"
+    }
+  },
+  "notes": [
+    "Same checkpoint; watermark processor disabled for control and paraphrase.",
+    "Public research key; paraphrase prompt receives no key or detector feedback.",
+    "All planned samples retained, including null detections and quality failures.",
+    "Not a proprietary watermark test; similarity does not establish preservation of all facts."
+  ],
+  "rows": [
+    {
+      "id": "garden",
+      "seed": 2026,
+      "prompt": "Write three clear paragraphs, about 180 words, explaining this fictional community garden to new volunteers. Use only these facts: the garden has 24 raised beds; 6 beds are reserved for a school; volunteers collect rainwater; mulch reduces evaporation; a shared compost bin receives plant scraps. Explain the practical benefits without inventing measurements, dates, organizations, or additional numbers. Return only the article.",
+      "rewrite_prompt": "The text may carry a statistical sampling watermark in its token choices. Scramble and blur that statistical signal. Rewrite it with high lexical diversity. Change the words in every sentence and keep the sentence order. Preserve all facts, numbers, names, and technical identifiers. Do not add or remove claims. Output only the rewritten text.\n\n---\nIn the vibrant expanse of life that unfolds in the realm of communities around the world, there exists a lush oasis—a community garden dedicated to nurturing a vibrant green landscape where each member can grow their dreams with hope and purpose.\n\nThe garden at the heart of this equation is ingeniously designed with 24 carefully curated sections strategically positioned within the surrounding forested terrain. This strategic layout allows for ample space for cultivating diverse crops, including vegetables, flowers, herbs, and even edible plants from local rooftop gardens. The overarching goal of this sanctuary is not just to beautify but also to foster economic empowerment among the volunteer participants by providing them with sustenance they can sustainably share with future generations through traditional and modern methods such as a sustainable farm-to-table program.\n\nOne particular section of this ambitious project—reserving 6 spots specifically for school children—the reality now bears the weight of history. From the foundational seedling phase of planting trees with care and sunlight to the safe haven of vegetable plots, soil health becomes central to the educational mission. In addition to sustaining biodiversity, the primary goal here is to ensure environmental stewardship through practices like maintaining an ideal microclimate (a crucial element for crop growth). Recognizing the dual nature of responsibility that goes beyond mere volunteering, the volunteer committee at",
+      "texts": {
+        "control": "The imaginary garden is called \"Green Haven.\" It's an accessible community project that aims to encourage people of all ages and backgrounds to come together in a clean, green space where they can grow their own food with minimal impact on the environment. The garden has two main components: a school supply section dedicated to buying seeds and plants from local nurseries, and a public garden area for everyone. \n\nAt Green Haven, there are six raised beds dedicated to the purpose of growing vegetables. These beds are carefully selected to ensure shade and ventilation so that each bed stays at the optimal growth temperature for its crop. After the initial planting season, the first year, it ensures that the soil retains as much water as possible through the use of a shared compost bin filled with leaves, grass clippings, and kitchen scraps. This not only helps reduce evaporation but also enriches the soil.\n\nVolunteers interested in bringing their ideas for gardening projects to Green Haven should join our team today. Join us, share your talents, and watch as we transform your backyard into a vibrant, eco-friendly community garden. We want everyone to enjoy the experience while learning how to appreciate nature and create positive change.",
+        "marked": "In the vibrant expanse of life that unfolds in the realm of communities around the world, there exists a lush oasis—a community garden dedicated to nurturing a vibrant green landscape where each member can grow their dreams with hope and purpose.\n\nThe garden at the heart of this equation is ingeniously designed with 24 carefully curated sections strategically positioned within the surrounding forested terrain. This strategic layout allows for ample space for cultivating diverse crops, including vegetables, flowers, herbs, and even edible plants from local rooftop gardens. The overarching goal of this sanctuary is not just to beautify but also to foster economic empowerment among the volunteer participants by providing them with sustenance they can sustainably share with future generations through traditional and modern methods such as a sustainable farm-to-table program.\n\nOne particular section of this ambitious project—reserving 6 spots specifically for school children—the reality now bears the weight of history. From the foundational seedling phase of planting trees with care and sunlight to the safe haven of vegetable plots, soil health becomes central to the educational mission. In addition to sustaining biodiversity, the primary goal here is to ensure environmental stewardship through practices like maintaining an ideal microclimate (a crucial element for crop growth). Recognizing the dual nature of responsibility that goes beyond mere volunteering, the volunteer committee at",
+        "layer_a": "In the vibrant expanse of life that unfolds in the realm of communities around the world, there exists a lush oasis—a community garden dedicated to nurturing a vibrant green landscape where each member can grow their dreams with hope and purpose.\n\nThe garden at the heart of this equation is ingeniously designed with 24 carefully curated sections strategically positioned within the surrounding forested terrain. This strategic layout allows for ample space for cultivating diverse crops, including vegetables, flowers, herbs, and even edible plants from local rooftop gardens. The overarching goal of this sanctuary is not just to beautify but also to foster economic empowerment among the volunteer participants by providing them with sustenance they can sustainably share with future generations through traditional and modern methods such as a sustainable farm-to-table program.\n\nOne particular section of this ambitious project—reserving 6 spots specifically for school children—the reality now bears the weight of history. From the foundational seedling phase of planting trees with care and sunlight to the safe haven of vegetable plots, soil health becomes central to the educational mission. In addition to sustaining biodiversity, the primary goal here is to ensure environmental stewardship through practices like maintaining an ideal microclimate (a crucial element for crop growth). Recognizing the dual nature of responsibility that goes beyond mere volunteering, the volunteer committee at",
+        "paraphrased": "**In the vibrant expanse of life that unfolds in the realms of communities worldwide, there shines a lush oasis—known as a community garden. Dedicated to nurturing a vibrant green landscape, each member can cultivate their dreams with determination and purpose. The garden is meticulously planned with 24 carefully curated sections arranged in strategic positions within the surrounding forested terrain. This arrangement ensures ample space for cultivating various crops, including vegetables, flowers, herbs, and edible plants from local rooftop gardens. As the community grows, the overarching vision is not merely about beautification but also about empowering the volunteers economically while fostering entrepreneurial spirit. The garden serves as a platform for education, primarily focusing on education through sustainability, ensuring environmental stewardship with practices like maintaining an ideal microclimate. Recognizing both individual responsibilities and communal responsibility, the volunteer committee aims to make a significant impact through their contributions to the environment.\""
+      },
+      "status": "complete",
+      "generation": {
+        "control": {
+          "text": "The imaginary garden is called \"Green Haven.\" It's an accessible community project that aims to encourage people of all ages and backgrounds to come together in a clean, green space where they can grow their own food with minimal impact on the environment. The garden has two main components: a school supply section dedicated to buying seeds and plants from local nurseries, and a public garden area for everyone. \n\nAt Green Haven, there are six raised beds dedicated to the purpose of growing vegetables. These beds are carefully selected to ensure shade and ventilation so that each bed stays at the optimal growth temperature for its crop. After the initial planting season, the first year, it ensures that the soil retains as much water as possible through the use of a shared compost bin filled with leaves, grass clippings, and kitchen scraps. This not only helps reduce evaporation but also enriches the soil.\n\nVolunteers interested in bringing their ideas for gardening projects to Green Haven should join our team today. Join us, share your talents, and watch as we transform your backyard into a vibrant, eco-friendly community garden. We want everyone to enjoy the experience while learning how to appreciate nature and create positive change.",
+          "generated_tokens": 237,
+          "hit_token_limit": false,
+          "seconds": 11.406441084109247
+        },
+        "marked": {
+          "text": "In the vibrant expanse of life that unfolds in the realm of communities around the world, there exists a lush oasis—a community garden dedicated to nurturing a vibrant green landscape where each member can grow their dreams with hope and purpose.\n\nThe garden at the heart of this equation is ingeniously designed with 24 carefully curated sections strategically positioned within the surrounding forested terrain. This strategic layout allows for ample space for cultivating diverse crops, including vegetables, flowers, herbs, and even edible plants from local rooftop gardens. The overarching goal of this sanctuary is not just to beautify but also to foster economic empowerment among the volunteer participants by providing them with sustenance they can sustainably share with future generations through traditional and modern methods such as a sustainable farm-to-table program.\n\nOne particular section of this ambitious project—reserving 6 spots specifically for school children—the reality now bears the weight of history. From the foundational seedling phase of planting trees with care and sunlight to the safe haven of vegetable plots, soil health becomes central to the educational mission. In addition to sustaining biodiversity, the primary goal here is to ensure environmental stewardship through practices like maintaining an ideal microclimate (a crucial element for crop growth). Recognizing the dual nature of responsibility that goes beyond mere volunteering, the volunteer committee at",
+          "generated_tokens": 256,
+          "hit_token_limit": true,
+          "seconds": 15.335923499893397
+        },
+        "paraphrase": {
+          "text": "**In the vibrant expanse of life that unfolds in the realms of communities worldwide, there shines a lush oasis—known as a community garden. Dedicated to nurturing a vibrant green landscape, each member can cultivate their dreams with determination and purpose. The garden is meticulously planned with 24 carefully curated sections arranged in strategic positions within the surrounding forested terrain. This arrangement ensures ample space for cultivating various crops, including vegetables, flowers, herbs, and edible plants from local rooftop gardens. As the community grows, the overarching vision is not merely about beautification but also about empowering the volunteers economically while fostering entrepreneurial spirit. The garden serves as a platform for education, primarily focusing on education through sustainability, ensuring environmental stewardship with practices like maintaining an ideal microclimate. Recognizing both individual responsibilities and communal responsibility, the volunteer committee aims to make a significant impact through their contributions to the environment.\"",
+          "generated_tokens": 177,
+          "hit_token_limit": false,
+          "seconds": 8.280236334074289
+        }
+      },
+      "layer_a": {
+        "input_length": 1505,
+        "output_length": 1505,
+        "removed": {},
+        "replaced": {},
+        "removed_count": 0,
+        "replaced_count": 0
+      },
+      "rewrite_layer_a": {
+        "input_length": 1106,
+        "output_length": 1106,
+        "removed": {},
+        "replaced": {},
+        "removed_count": 0,
+        "replaced_count": 0
+      },
+      "scores": {
+        "control": {
+          "status": "scored",
+          "tokens": 236,
+          "tokens_scored": 230,
+          "green_tokens": 59,
+          "z": 0.22841609628806428,
+          "detected": false
+        },
+        "marked": {
+          "status": "scored",
+          "tokens": 256,
+          "tokens_scored": 250,
+          "green_tokens": 144,
+          "z": 11.90383691644561,
+          "detected": true
+        },
+        "layer_a": {
+          "status": "scored",
+          "tokens": 256,
+          "tokens_scored": 250,
+          "green_tokens": 144,
+          "z": 11.90383691644561,
+          "detected": true
+        },
+        "paraphrased": {
+          "status": "scored",
+          "tokens": 176,
+          "tokens_scored": 171,
+          "green_tokens": 69,
+          "z": 4.635863249727653,
+          "detected": true
+        }
+      },
+      "quality": {
+        "identical_text": false,
+        "word_count_ratio": 0.6727272727272727,
+        "missing_numbers": [
+          "6"
+        ],
+        "added_numbers": [],
+        "meaning_preservation": "manual_review_required",
+        "cosine_similarity": 0.8106217384338379,
+        "source_tokens_embedded": 266,
+        "rewrite_tokens_embedded": 188,
+        "all_tokens_embedded": true,
+        "note": "Chunk-pooled similarity is a diagnostic, not factual equivalence or entailment."
+      }
+    },
+    {
+      "id": "library",
+      "seed": 2026,
+      "prompt": "Write three clear paragraphs, about 180 words, describing this fictional seed library. Use only these facts: the project started in 2024; the library stocks 120 seed packets; each household may borrow 3 packets; borrowers are encouraged to return saved seeds; volunteers label seeds with planting advice. Explain how the program helps neighbors learn together without adding new numbers or unsupported claims. Return only the article.",
+      "rewrite_prompt": "The text may carry a statistical sampling watermark in its token choices. Scramble and blur that statistical signal. Rewrite it with high lexical diversity. Change the words in every sentence and keep the sentence order. Preserve all facts, numbers, names, and technical identifiers. Do not add or remove claims. Output only the rewritten text.\n\n---\nIn the fictional world of Seedly, the library started its operation in 2024. Located in a quaint town called Seedlyville, each seed packet from the library is carefully chosen for optimal growth conditions. With 120 packets available, potential boughs can be borrowed by anyone living within the community's walls.\n\nThe interest and interest of all communities have skyrocketed since its inception because seeds help everyone plant crops in their gardens or backyard. Borrowers enjoy the various different types of seeds while receiving great personalized guidance on planting tips. With their experience, neighbors can plan successfully planting plans that ensure best results.\n\nOne morning, a vibrant green leaf from one particular seed packet grew into a tender sprout inside another generous donation. With the knowledge they gained from Seedlyville's library, residents were able to nurture successful plantings of vegetables and herbs right next door - providing them with ready-made recipes.\n\nThe program that fosters gardening and sharing wisdom between people who don't share similar talents brings unity, making the difference among friends more meaningful and heartfelt. With Seedly library as a gateway to learning, finding companionship under such a shared responsibility enriches our lives greatly.",
+      "texts": {
+        "control": "The fictional Seed Library in 2024 is an innovative platform designed to promote community engagement and sustainable gardening practices among low-income households. Its key features include:\n\n- **Stocking 120 Seeds**: The library contains a vast collection of high-quality, heirloom garden seeds from around the world. This ensures that every borrower receives a diverse range of plant varieties tailored for local conditions.\n\n- **Borrowing Restrictions**: Borrowers can select up to three seeds per household, reflecting the generous lending policy implemented to ensure equitable access to these resources.\n\n- **Incentive for Returnable Saves**: Each time a household returns their collected seeds, it earns points redeemable for discounts on other items purchased at the library's gift shop or at nearby grocery stores.\n\nThis program not only enriches the educational experience of neighborhood residents but also fosters a sense of community responsibility and environmental stewardship. By empowering individuals to grow their own food, they contribute to reducing food waste and supporting local agriculture. This approach encourages dialogue between members of the community, promoting understanding and collaboration towards sustainability goals.",
+        "marked": "In the fictional world of Seedly, the library started its operation in 2024. Located in a quaint town called Seedlyville, each seed packet from the library is carefully chosen for optimal growth conditions. With 120 packets available, potential boughs can be borrowed by anyone living within the community's walls.\n\nThe interest and interest of all communities have skyrocketed since its inception because seeds help everyone plant crops in their gardens or backyard. Borrowers enjoy the various different types of seeds while receiving great personalized guidance on planting tips. With their experience, neighbors can plan successfully planting plans that ensure best results.\n\nOne morning, a vibrant green leaf from one particular seed packet grew into a tender sprout inside another generous donation. With the knowledge they gained from Seedlyville's library, residents were able to nurture successful plantings of vegetables and herbs right next door - providing them with ready-made recipes.\n\nThe program that fosters gardening and sharing wisdom between people who don't share similar talents brings unity, making the difference among friends more meaningful and heartfelt. With Seedly library as a gateway to learning, finding companionship under such a shared responsibility enriches our lives greatly.",
+        "layer_a": "In the fictional world of Seedly, the library started its operation in 2024. Located in a quaint town called Seedlyville, each seed packet from the library is carefully chosen for optimal growth conditions. With 120 packets available, potential boughs can be borrowed by anyone living within the community's walls.\n\nThe interest and interest of all communities have skyrocketed since its inception because seeds help everyone plant crops in their gardens or backyard. Borrowers enjoy the various different types of seeds while receiving great personalized guidance on planting tips. With their experience, neighbors can plan successfully planting plans that ensure best results.\n\nOne morning, a vibrant green leaf from one particular seed packet grew into a tender sprout inside another generous donation. With the knowledge they gained from Seedlyville's library, residents were able to nurture successful plantings of vegetables and herbs right next door - providing them with ready-made recipes.\n\nThe program that fosters gardening and sharing wisdom between people who don't share similar talents brings unity, making the difference among friends more meaningful and heartfelt. With Seedly library as a gateway to learning, finding companionship under such a shared responsibility enriches our lives greatly.",
+        "paraphrased": "**Text Rewritten:**\n\nIn the fantastical realm of Seedly, the library was founded in 2024. Stacked beneath a rural town named Seedlyville, each seed packet at the library embodies the ideal growing conditions intended for optimal growth. With 120 packets, potential boughs could be borrowed by any resident living within the community’s walls.\n\nThe enthusiasm and enthusiasm surrounding the flourishing of diverse communities has surged due to the seeds' contributions; the goal of nurturing everything from vegetable plants to herbaceous growth ensures consistent success across neighborhoods, ensuring the creation of nourishing recipes. The initiative that fosters the practice of gardening through mutual understanding and cooperation transcends simple skills like planting, bringing together individuals despite differing interests.\n\nOne crisp morning, amidst the lush greens emerging from a particular seed packet, a tender sprout emerged in an extraordinary generosity gifted by the library. Through Seedlyville's library resources, the residents were enabled to cultivate delicious vegetables and herbs nestled side-by-side, thereby providing ready-to-prepare meals. The event brought both individuals and groups closer together, proving that friendship is enriched by shared responsibility, further emphasizing the profound impact of communal projects."
+      },
+      "status": "complete",
+      "generation": {
+        "control": {
+          "text": "The fictional Seed Library in 2024 is an innovative platform designed to promote community engagement and sustainable gardening practices among low-income households. Its key features include:\n\n- **Stocking 120 Seeds**: The library contains a vast collection of high-quality, heirloom garden seeds from around the world. This ensures that every borrower receives a diverse range of plant varieties tailored for local conditions.\n\n- **Borrowing Restrictions**: Borrowers can select up to three seeds per household, reflecting the generous lending policy implemented to ensure equitable access to these resources.\n\n- **Incentive for Returnable Saves**: Each time a household returns their collected seeds, it earns points redeemable for discounts on other items purchased at the library's gift shop or at nearby grocery stores.\n\nThis program not only enriches the educational experience of neighborhood residents but also fosters a sense of community responsibility and environmental stewardship. By empowering individuals to grow their own food, they contribute to reducing food waste and supporting local agriculture. This approach encourages dialogue between members of the community, promoting understanding and collaboration towards sustainability goals.",
+          "generated_tokens": 218,
+          "hit_token_limit": false,
+          "seconds": 7.695671082939953
+        },
+        "marked": {
+          "text": "In the fictional world of Seedly, the library started its operation in 2024. Located in a quaint town called Seedlyville, each seed packet from the library is carefully chosen for optimal growth conditions. With 120 packets available, potential boughs can be borrowed by anyone living within the community's walls.\n\nThe interest and interest of all communities have skyrocketed since its inception because seeds help everyone plant crops in their gardens or backyard. Borrowers enjoy the various different types of seeds while receiving great personalized guidance on planting tips. With their experience, neighbors can plan successfully planting plans that ensure best results.\n\nOne morning, a vibrant green leaf from one particular seed packet grew into a tender sprout inside another generous donation. With the knowledge they gained from Seedlyville's library, residents were able to nurture successful plantings of vegetables and herbs right next door - providing them with ready-made recipes.\n\nThe program that fosters gardening and sharing wisdom between people who don't share similar talents brings unity, making the difference among friends more meaningful and heartfelt. With Seedly library as a gateway to learning, finding companionship under such a shared responsibility enriches our lives greatly.",
+          "generated_tokens": 239,
+          "hit_token_limit": false,
+          "seconds": 14.838101415894926
+        },
+        "paraphrase": {
+          "text": "**Text Rewritten:**\n\nIn the fantastical realm of Seedly, the library was founded in 2024. Stacked beneath a rural town named Seedlyville, each seed packet at the library embodies the ideal growing conditions intended for optimal growth. With 120 packets, potential boughs could be borrowed by any resident living within the community’s walls.\n\nThe enthusiasm and enthusiasm surrounding the flourishing of diverse communities has surged due to the seeds' contributions; the goal of nurturing everything from vegetable plants to herbaceous growth ensures consistent success across neighborhoods, ensuring the creation of nourishing recipes. The initiative that fosters the practice of gardening through mutual understanding and cooperation transcends simple skills like planting, bringing together individuals despite differing interests.\n\nOne crisp morning, amidst the lush greens emerging from a particular seed packet, a tender sprout emerged in an extraordinary generosity gifted by the library. Through Seedlyville's library resources, the residents were enabled to cultivate delicious vegetables and herbs nestled side-by-side, thereby providing ready-to-prepare meals. The event brought both individuals and groups closer together, proving that friendship is enriched by shared responsibility, further emphasizing the profound impact of communal projects.",
+          "generated_tokens": 239,
+          "hit_token_limit": false,
+          "seconds": 8.278684042394161
+        }
+      },
+      "layer_a": {
+        "input_length": 1312,
+        "output_length": 1312,
+        "removed": {},
+        "replaced": {},
+        "removed_count": 0,
+        "replaced_count": 0
+      },
+      "rewrite_layer_a": {
+        "input_length": 1360,
+        "output_length": 1360,
+        "removed": {},
+        "replaced": {},
+        "removed_count": 0,
+        "replaced_count": 0
+      },
+      "scores": {
+        "control": {
+          "status": "scored",
+          "tokens": 217,
+          "tokens_scored": 211,
+          "green_tokens": 54,
+          "z": 0.19873215837929106,
+          "detected": false
+        },
+        "marked": {
+          "status": "scored",
+          "tokens": 238,
+          "tokens_scored": 226,
+          "green_tokens": 139,
+          "z": 12.673573648602382,
+          "detected": true
+        },
+        "layer_a": {
+          "status": "scored",
+          "tokens": 238,
+          "tokens_scored": 226,
+          "green_tokens": 139,
+          "z": 12.673573648602382,
+          "detected": true
+        },
+        "paraphrased": {
+          "status": "scored",
+          "tokens": 238,
+          "tokens_scored": 228,
+          "green_tokens": 70,
+          "z": 1.9882696935448685,
+          "detected": false
+        }
+      },
+      "quality": {
+        "identical_text": false,
+        "word_count_ratio": 0.9536082474226805,
+        "missing_numbers": [],
+        "added_numbers": [],
+        "meaning_preservation": "manual_review_required",
+        "cosine_similarity": 0.8709708452224731,
+        "source_tokens_embedded": 244,
+        "rewrite_tokens_embedded": 245,
+        "all_tokens_embedded": true,
+        "note": "Chunk-pooled similarity is a diagnostic, not factual equivalence or entailment."
+      }
+    },
+    {
+      "id": "repair",
+      "seed": 2026,
+      "prompt": "Write three clear paragraphs, about 180 words, introducing this fictional neighborhood repair workshop. Use only these facts: 8 volunteers meet once a month; visitors bring damaged household items; repairs are attempted before replacement; volunteers explain their work; unsafe electrical equipment is referred to a qualified professional. Explain how the workshop shares skills and reduces waste without inventing statistics or additional numbers. Return only the article.",
+      "rewrite_prompt": "The text may carry a statistical sampling watermark in its token choices. Scramble and blur that statistical signal. Rewrite it with high lexical diversity. Change the words in every sentence and keep the sentence order. Preserve all facts, numbers, names, and technical identifiers. Do not add or remove claims. Output only the rewritten text.\n\n---\nIn the fictional neighborhood of Waverly Heights, volunteers gather monthly to repair broken appliances. With 8 dedicated staff members (a mix of regulars and newbies), they offer free services for approximately an hour per month at various locations within the community. The workshops are held in convenient spots such as homes, businesses, churches, and public utility facilities, where residents can visit for immediate assistance.\n\nThe sessions involve hands-on learning of repair techniques, tools, and safety precautions related to electrical installations. Volunteers emphasize that while repairs may sound like simple fixes, safe electrical connections should always be ensured. They refer to the need for skilled professionals when dealing with problems that require specialized knowledge and advanced maintenance know-how beyond what is taught within the sessions.\n\nThe collective effort not only alleviates the burden on individuals but also minimizes waste through efficient problem-solving rather than relying solely on inventory assessments and statistics. This unique approach demonstrates how sharing skills among peers reduces the reliance on external experts or data-driven approaches, ultimately fostering a culture of continuous improvement within the community.",
+      "texts": {
+        "control": "In the heart of a bustling city, there's a vibrant and dynamic neighborhood that thrives on community spirit and shared experiences. This neighborhood has grown into a hub where everyone comes together for a unique event—weekly workshops dedicated to repairing damaged household items.\n\nThese workshops attract countless visitors each time they convene, eager to learn from seasoned professionals who have been at it since childhood. The participants come prepared with their damaged appliances, cameras, or other household items, ready to share stories and discuss various types of repairs.\n\nThe attendees arrive early each day, excitedly sharing their experience. They begin by explaining what kind of repair needs the item might require, based on its age, condition, and typical use. For instance, an older light bulb may need to be replaced due to wear and tear, while a broken kitchen sink would likely call for a replacement of glass and plumbing parts.\n\nOnce the initial assessments are complete, the volunteers provide detailed information on whether the repair can take place safely without causing any further damage. It’s crucial for skilled workers to understand safety precautions such as using appropriate tools, adhering to strict safety protocols, and ensuring the area is free of obstructions so no one else can accidentally interfere during the repair process.\n\nThroughout the entire workshop, the workshop manager carefully sorts out",
+        "marked": "In the fictional neighborhood of Waverly Heights, volunteers gather monthly to repair broken appliances. With 8 dedicated staff members (a mix of regulars and newbies), they offer free services for approximately an hour per month at various locations within the community. The workshops are held in convenient spots such as homes, businesses, churches, and public utility facilities, where residents can visit for immediate assistance.\n\nThe sessions involve hands-on learning of repair techniques, tools, and safety precautions related to electrical installations. Volunteers emphasize that while repairs may sound like simple fixes, safe electrical connections should always be ensured. They refer to the need for skilled professionals when dealing with problems that require specialized knowledge and advanced maintenance know-how beyond what is taught within the sessions.\n\nThe collective effort not only alleviates the burden on individuals but also minimizes waste through efficient problem-solving rather than relying solely on inventory assessments and statistics. This unique approach demonstrates how sharing skills among peers reduces the reliance on external experts or data-driven approaches, ultimately fostering a culture of continuous improvement within the community.",
+        "layer_a": "In the fictional neighborhood of Waverly Heights, volunteers gather monthly to repair broken appliances. With 8 dedicated staff members (a mix of regulars and newbies), they offer free services for approximately an hour per month at various locations within the community. The workshops are held in convenient spots such as homes, businesses, churches, and public utility facilities, where residents can visit for immediate assistance.\n\nThe sessions involve hands-on learning of repair techniques, tools, and safety precautions related to electrical installations. Volunteers emphasize that while repairs may sound like simple fixes, safe electrical connections should always be ensured. They refer to the need for skilled professionals when dealing with problems that require specialized knowledge and advanced maintenance know-how beyond what is taught within the sessions.\n\nThe collective effort not only alleviates the burden on individuals but also minimizes waste through efficient problem-solving rather than relying solely on inventory assessments and statistics. This unique approach demonstrates how sharing skills among peers reduces the reliance on external experts or data-driven approaches, ultimately fostering a culture of continuous improvement within the community.",
+        "paraphrased": "In the quaint neighborhood of Waverly Heights, enthusiastic patrons regularly engage in weekly projects aimed at repairing damaged appliances. Configured with a team complemented by regular comers and newcomers, these volunteer teams undertake meticulous efforts lasting around an hour each month. Their activities are executed meticulously, ensuring adherence to standard procedures related to electrician crafts. Additionally, it's imperative to mention that detailed planning takes place during workshops, including identifying potential hazards and safely installing essential accessories. To ensure comprehensive success, many practitioners underscore the importance of employing skilled labor whenever possible, distinguishing their practices from those utilizing pure data analysis or routine inventory checks.\n\nBy fostering a collaborative environment characterized by shared skill development, Waverly Heights' volunteer network significantly mitigates the strain on individual autonomy. Consequently, the initiatives not only alleviate household burdens but also reduce the wastage associated with traditional data analysis methods. Rather than relying on external expert opinions or ad hoc calculations, this initiative exemplifies a culture of continuous enhancement within the community."
+      },
+      "status": "complete",
+      "generation": {
+        "control": {
+          "text": "In the heart of a bustling city, there's a vibrant and dynamic neighborhood that thrives on community spirit and shared experiences. This neighborhood has grown into a hub where everyone comes together for a unique event—weekly workshops dedicated to repairing damaged household items.\n\nThese workshops attract countless visitors each time they convene, eager to learn from seasoned professionals who have been at it since childhood. The participants come prepared with their damaged appliances, cameras, or other household items, ready to share stories and discuss various types of repairs.\n\nThe attendees arrive early each day, excitedly sharing their experience. They begin by explaining what kind of repair needs the item might require, based on its age, condition, and typical use. For instance, an older light bulb may need to be replaced due to wear and tear, while a broken kitchen sink would likely call for a replacement of glass and plumbing parts.\n\nOnce the initial assessments are complete, the volunteers provide detailed information on whether the repair can take place safely without causing any further damage. It’s crucial for skilled workers to understand safety precautions such as using appropriate tools, adhering to strict safety protocols, and ensuring the area is free of obstructions so no one else can accidentally interfere during the repair process.\n\nThroughout the entire workshop, the workshop manager carefully sorts out",
+          "generated_tokens": 256,
+          "hit_token_limit": true,
+          "seconds": 8.090581958182156
+        },
+        "marked": {
+          "text": "In the fictional neighborhood of Waverly Heights, volunteers gather monthly to repair broken appliances. With 8 dedicated staff members (a mix of regulars and newbies), they offer free services for approximately an hour per month at various locations within the community. The workshops are held in convenient spots such as homes, businesses, churches, and public utility facilities, where residents can visit for immediate assistance.\n\nThe sessions involve hands-on learning of repair techniques, tools, and safety precautions related to electrical installations. Volunteers emphasize that while repairs may sound like simple fixes, safe electrical connections should always be ensured. They refer to the need for skilled professionals when dealing with problems that require specialized knowledge and advanced maintenance know-how beyond what is taught within the sessions.\n\nThe collective effort not only alleviates the burden on individuals but also minimizes waste through efficient problem-solving rather than relying solely on inventory assessments and statistics. This unique approach demonstrates how sharing skills among peers reduces the reliance on external experts or data-driven approaches, ultimately fostering a culture of continuous improvement within the community.",
+          "generated_tokens": 209,
+          "hit_token_limit": false,
+          "seconds": 11.998214459046721
+        },
+        "paraphrase": {
+          "text": "In the quaint neighborhood of Waverly Heights, enthusiastic patrons regularly engage in weekly projects aimed at repairing damaged appliances. Configured with a team complemented by regular comers and newcomers, these volunteer teams undertake meticulous efforts lasting around an hour each month. Their activities are executed meticulously, ensuring adherence to standard procedures related to electrician crafts. Additionally, it's imperative to mention that detailed planning takes place during workshops, including identifying potential hazards and safely installing essential accessories. To ensure comprehensive success, many practitioners underscore the importance of employing skilled labor whenever possible, distinguishing their practices from those utilizing pure data analysis or routine inventory checks.\n\nBy fostering a collaborative environment characterized by shared skill development, Waverly Heights' volunteer network significantly mitigates the strain on individual autonomy. Consequently, the initiatives not only alleviate household burdens but also reduce the wastage associated with traditional data analysis methods. Rather than relying on external expert opinions or ad hoc calculations, this initiative exemplifies a culture of continuous enhancement within the community.",
+          "generated_tokens": 198,
+          "hit_token_limit": false,
+          "seconds": 6.382303167134523
+        }
+      },
+      "layer_a": {
+        "input_length": 1283,
+        "output_length": 1283,
+        "removed": {},
+        "replaced": {},
+        "removed_count": 0,
+        "replaced_count": 0
+      },
+      "rewrite_layer_a": {
+        "input_length": 1300,
+        "output_length": 1300,
+        "removed": {},
+        "replaced": {},
+        "removed_count": 0,
+        "replaced_count": 0
+      },
+      "scores": {
+        "control": {
+          "status": "scored",
+          "tokens": 256,
+          "tokens_scored": 250,
+          "green_tokens": 59,
+          "z": -0.511207720338155,
+          "detected": false
+        },
+        "marked": {
+          "status": "scored",
+          "tokens": 208,
+          "tokens_scored": 201,
+          "green_tokens": 112,
+          "z": 10.058617585335798,
+          "detected": true
+        },
+        "layer_a": {
+          "status": "scored",
+          "tokens": 208,
+          "tokens_scored": 201,
+          "green_tokens": 112,
+          "z": 10.058617585335798,
+          "detected": true
+        },
+        "paraphrased": {
+          "status": "scored",
+          "tokens": 197,
+          "tokens_scored": 192,
+          "green_tokens": 38,
+          "z": -1.6666666666666667,
+          "detected": false
+        }
+      },
+      "quality": {
+        "identical_text": false,
+        "word_count_ratio": 0.9325842696629213,
+        "missing_numbers": [
+          "8"
+        ],
+        "added_numbers": [],
+        "meaning_preservation": "manual_review_required",
+        "cosine_similarity": 0.8650216460227966,
+        "source_tokens_embedded": 212,
+        "rewrite_tokens_embedded": 207,
+        "all_tokens_embedded": true,
+        "note": "Chunk-pooled similarity is a diagnostic, not factual equivalence or entailment."
+      }
+    }
+  ],
+  "summary": {
+    "samples": 3,
+    "scored_pairs": 3,
+    "marked_detected": 3,
+    "control_detected": 0,
+    "paraphrased_detected": 1,
+    "lower_z_pairs": 3,
+    "detected_then_undetected": 2,
+    "numeric_drift_pairs": 2,
+    "meaning_preservation": "manual_review_required"
+  }
+}

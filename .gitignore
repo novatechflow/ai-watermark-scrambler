@@ -8,3 +8,5 @@ __pycache__/
 *.png.bak
 *.jpg.bak
 .claude/settings.local.json
+demo/.cache/
+demo/runs/

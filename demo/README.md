@@ -1,6 +1,82 @@
-# Research harness
+# Research demos
 
 This directory is the setup used to study how a rewrite changes a statistical text watermark. It is not part of the cleaner. A run does not certify that a vendor detector will miss the text.
+
+Two experiments are available: `make qa` is a fast synthetic token-substitution
+test with no model dependency; `make qa-model` generates actual prose and an
+actual model paraphrase under a public, controlled watermark scheme.
+
+## Public-model prose experiment
+
+The [checked-in pilot and quality review](RESULTS.md) include the full report.
+It found lower detector scores and substantial quality problems; it does not
+claim a successful meaning-preserving attack.
+
+```bash
+make model-tools                 # isolated demo/.venv; optional torch/transformers
+make qa-model                    # first run downloads public model weights
+# More independent samples; every selected prompt is run for every seed:
+make qa-model MODEL_QA_ARGS='--seeds 2026 7 42 --output demo/runs/multi-seed.json'
+```
+
+The default models are immutable revisions of
+[Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct) and
+[all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2).
+Allow a few GB of disk space and several minutes on a CPU. Automatic device
+selection uses Metal/float16 when available and CPU/float32 otherwise;
+`--device cpu` forces CPU inference. Dependencies, model
+cache (`demo/.cache/`), and generated reports (`demo/runs/`) are separate from
+the skill and ordinary tests. They are not committed. Downloads need network
+access; inference runs locally. No paid API or proprietary detector is used.
+
+For each prompt in `prose_prompts.json` and each seed, the harness:
+
+1. Generates an unwatermarked control and a watermarked article with matched
+   generation settings and seed. The public Hugging Face
+   [WatermarkLogitsProcessor/WatermarkDetector](https://huggingface.co/docs/transformers/v5.20.2/internal/generation_utils#transformers.WatermarkLogitsProcessor)
+   implements a keyed green-list logit bias based on the Kirchenbauer scheme.
+   This is an actual sampling watermark, not the synthetic word-list generator.
+2. Applies the skill's Layer A cleaner to the watermarked text.
+3. Uses the skill's paraphrase prompt with the same checkpoint, explicitly
+   disabling the watermark processor. The paraphraser receives neither the key
+   nor detector feedback. Reusing the weights does not reapply this watermark
+   when its processor is disabled; this says
+   nothing about disabling a proprietary provider's watermark.
+4. Scores the completion text alone, after retokenization, in every condition
+   with the same key, vocabulary, CPU RNG device and settings. The public
+   watermark processor always generates its seeded permutations on CPU, even
+   when model inference uses Metal. Repeated n-grams are
+   counted once. The configured threshold is z > 4 by default.
+5. Records full-text semantic embedding cosine similarity, text length ratio,
+   identical outputs, and missing/added numeric literals. Every embedding token
+   is covered by bounded chunks; long passages are not silently clipped.
+
+The report contains the full prompts and texts, seeds, immutable model
+revisions, watermark parameters, generation limits, token counts, scores,
+package versions, and hashes of the harness and prompt file. It is saved after
+every completed sample. Interrupted/failed runs are not reported as complete.
+Generated texts and detector scores are checkpointed before semantic scoring,
+so a scorer failure does not discard the underlying sample.
+Seeds and recorded versions support repeatable comparisons; exact token output
+can still vary across hardware and runtime versions.
+Truncated generations are flagged. Null detections and poor paraphrases stay in
+the results; the harness does not retry until a favorable outcome appears.
+
+Cosine similarity is a diagnostic, **not proof that all facts were preserved**.
+Numeric checks are literal checks: writing a number in words can be flagged,
+while other factual changes can be missed. Inspect the saved text for omissions,
+hallucinations, repetition, and incomplete endings. Report watermark scores
+together with these quality diagnostics, never as a standalone success rate.
+
+This demonstrates behavior for this public scheme, model, prompts, seeds and
+parameters only. It does not measure Claude/Gemini watermarks, prove universal
+removal, or establish calibrated detection accuracy from a few examples.
+
+To use another compatible causal chat model, pass `--model` and an immutable
+40-character `--revision`. Use `--help` for token limits, bias, threshold, context
+window and CPU thread controls. The key is intentionally public research data.
+
+## Synthetic experiment
 
 The cleaner scrambles token choice. The score that measures that scramble is a green-list z-score, and computing it requires the watermark key. Vendor keys are not public, so this harness generates the document itself, with a key it holds, then scores the same document after Layer A and after an unkeyed rewrite.
 

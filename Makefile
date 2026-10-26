@@ -1,4 +1,4 @@
-.PHONY: dev test smoke tools install-skill qa clean
+.PHONY: dev test smoke tools install-skill qa model-tools qa-model clean
 
 SCRIPTS := skills/ai-watermark-scrambler/scripts
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python3; fi)
@@ -18,6 +18,14 @@ smoke:
 
 qa:
 	"$(PYTHON)" demo/watermark_qa.py
+
+# The real-model experiment is optional; normal setup/tests never download models.
+model-tools:
+	@if [ ! -x demo/.venv/bin/python ]; then "$(PYTHON)" -m venv demo/.venv; fi
+	demo/.venv/bin/python -m pip install -r demo/requirements.txt
+
+qa-model:
+	demo/.venv/bin/python demo/model_watermark_qa.py $(MODEL_QA_ARGS)
 
 SKILLS_DIR ?= $(HOME)/.grok/skills
 

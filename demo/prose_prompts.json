@@ -1,0 +1,14 @@
+[
+  {
+    "id": "garden",
+    "prompt": "Write three clear paragraphs, about 180 words, explaining this fictional community garden to new volunteers. Use only these facts: the garden has 24 raised beds; 6 beds are reserved for a school; volunteers collect rainwater; mulch reduces evaporation; a shared compost bin receives plant scraps. Explain the practical benefits without inventing measurements, dates, organizations, or additional numbers. Return only the article."
+  },
+  {
+    "id": "library",
+    "prompt": "Write three clear paragraphs, about 180 words, describing this fictional seed library. Use only these facts: the project started in 2024; the library stocks 120 seed packets; each household may borrow 3 packets; borrowers are encouraged to return saved seeds; volunteers label seeds with planting advice. Explain how the program helps neighbors learn together without adding new numbers or unsupported claims. Return only the article."
+  },
+  {
+    "id": "repair",
+    "prompt": "Write three clear paragraphs, about 180 words, introducing this fictional neighborhood repair workshop. Use only these facts: 8 volunteers meet once a month; visitors bring damaged household items; repairs are attempted before replacement; volunteers explain their work; unsafe electrical equipment is referred to a qualified professional. Explain how the workshop shares skills and reduces waste without inventing statistics or additional numbers. Return only the article."
+  }
+]

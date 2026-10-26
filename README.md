@@ -51,6 +51,14 @@ Attack detail, and the pixel and visible marks this tool does not touch, is in [
 
 The harness used for this research generates a document with a key it holds, runs Layer A, then an unkeyed rewrite, and prints the green-list z-score. The write-up and the default numbers are in [`demo/README.md`](demo/README.md). `make qa` runs it again.
 
+An optional `make qa-model` experiment generates real prose with a public
+watermark processor, runs an actual model paraphrase with that processor
+disabled, and reports detector scores alongside semantic-similarity and numeric
+change diagnostics. Run `make model-tools` first; these heavier dependencies
+and model downloads are isolated from the skill and normal setup. Results apply
+to the selected public scheme, not proprietary vendor watermarks. See the
+[experiment protocol](demo/README.md#public-model-prose-experiment).
+
 ## Sources
 
 - [Kirchenbauer et al., 2023. *A Watermark for Large Language Models.*](https://arxiv.org/abs/2301.10226) Green list, logit bias, z-score.
@@ -122,7 +130,7 @@ skills/ai-watermark-scrambler/
   requirements.txt  optional extras
 tests/              pytest suite and fixtures
 demo/               research harness for the green-list z-score
-Makefile            dev / tools / test / smoke / qa / install-skill / clean
+Makefile            dev / tools / test / smoke / qa / model-tools / qa-model / install-skill / clean
 requirements-dev.txt repo development dependencies (optional extras + pytest)
 ```
 
@@ -135,8 +143,10 @@ requirements-dev.txt repo development dependencies (optional extras + pytest)
 | `test` | Runs pytest |
 | `smoke` | Checks exact inspector exit codes and re-inspects cleaned fixtures in private temporary output |
 | `qa` | Runs the green-list research harness. Write-up: [`demo/README.md`](demo/README.md) |
+| `model-tools` | Installs optional real-model research dependencies in `demo/.venv` |
+| `qa-model` | Runs the public-model prose/paraphrase experiment; `MODEL_QA_ARGS` supplies flags |
 | `install-skill` | Symlinks the skill into `~/.grok/skills/` (`SKILLS_DIR` overrides that directory) |
-| `clean` | Drops `__pycache__`, `.pytest_cache`, and both venvs |
+| `clean` | Drops `__pycache__`, `.pytest_cache`, and the repo/skill venvs; preserves the optional model environment, cache and reports |
 
 ## Dependencies
 
