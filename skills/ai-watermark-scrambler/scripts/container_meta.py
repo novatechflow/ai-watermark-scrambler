@@ -994,13 +994,14 @@ def clean_container(
     path: Path,
     dest: Path,
     *,
+    format_path: Path | None = None,
     also_layer_a_text: bool = True,
     nfkc: bool = False,
     aggressive_homoglyphs: bool = False,
 ) -> dict[str, Any]:
     """Clean container metadata. Layer A also runs on HTML, Markdown, and document text."""
     data = path.read_bytes()
-    fmt = detect_container_format(path, data)
+    fmt = detect_container_format(format_path if format_path is not None else path, data)
     actions: list[str] = []
     dest.parent.mkdir(parents=True, exist_ok=True)
     meta: dict[str, Any] = {"format": fmt}

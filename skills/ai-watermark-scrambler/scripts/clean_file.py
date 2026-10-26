@@ -114,6 +114,7 @@ def main() -> int:
         result = clean_container(
             src,
             dest,
+            format_path=args.path,
             nfkc=args.nfkc,
             aggressive_homoglyphs=args.aggressive_homoglyphs,
         )
