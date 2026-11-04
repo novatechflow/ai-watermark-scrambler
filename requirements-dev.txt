@@ -5,4 +5,4 @@
 #     python3 skills/ai-watermark-scrambler/scripts/ensure_tools.py --install
 -r skills/ai-watermark-scrambler/requirements.txt
 
-pytest>=9.1.1
+pytest>=9.2.0
