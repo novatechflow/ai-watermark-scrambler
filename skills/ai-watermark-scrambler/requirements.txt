@@ -4,7 +4,7 @@
 
 # Bundles libqpdf: strips PDF metadata and rewrites the file, so the pre-strip
 # revision is gone. Replaces the exiftool + qpdf pair for PDFs.
-pikepdf>=10.17.0,<11
+pikepdf>=10.18.0,<11
 
 # Official C2PA binding. Replaces the c2patool CLI for manifest inspection.
 c2pa-python>=0.38.2,<0.39
