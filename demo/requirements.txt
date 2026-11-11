@@ -1,4 +1,4 @@
 # Optional real-model research experiment; not needed by the skill or make qa.
 # Exact versions keep the reference experiment's generation/detector API stable.
 torch==2.15.0
-transformers==5.22.1
+transformers==5.22.2
